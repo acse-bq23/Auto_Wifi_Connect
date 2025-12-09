@@ -11,3 +11,11 @@ debug-*.html
 # macOS 系统文件
 .DS_Store
 
+# Node & Playwright caches
+node_modules/
+ms-playwright/
+playwright/.cache/
+# 常见浏览器包（保险）
+**/chromium-*/
+**/chromium_headless_shell-*/
+**/Chromium.app/
