@@ -1,0 +1,13 @@
+# 依赖与缓存（可按需移除）
+node_modules/
+ms-playwright/
+
+# 日志与调试产物
+*.log
+debug-*.png
+debug-*.html
+.env
+
+# macOS 系统文件
+.DS_Store
+
