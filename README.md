@@ -22,8 +22,6 @@ Auto_Wifi_Connect/
 ├─ LICENSE                  # ISC 许可证
 ├─ ms-playwright/ (可选)    # Playwright 浏览器缓存，拷贝可省下载
 ├─ node_modules/ (可选)     # 依赖目录，拷贝可省 npm install
-├─ portal-login.log         # 运行日志（可选）
-├─ launchd.out.log / err.log # launchd 输出（可选）
 └─ README.md
 ```
 
