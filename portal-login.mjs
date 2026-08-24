@@ -12,7 +12,9 @@ function loadDotEnv(file) {
       const m = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/);
       if (!m) continue;
       const key = m[1];
-      const val = m[2].replace(/^['"]|['"]$/g, '');
+      const raw = m[2].trim();
+      const quoted = raw.match(/^(['"])(.*)\1\s*(?:#.*)?$/);
+      const val = quoted ? quoted[2] : raw.replace(/\s+#.*$/, '');
       if (process.env[key] === undefined) process.env[key] = val;
     }
   } catch {}

@@ -1,23 +1,26 @@
 # Auto Wi-Fi Connect
 
-基于 Playwright 的校园/企业网关自动登录脚本，支持掉线探测、自动重连、开机自启与周期性保活。适用于 macOS。
+基于 Playwright 的校园/企业网关自动登录脚本，支持掉线探测、自动重连、开机自启与周期性保活。适用于 macOS 和 Windows。
 
 ## 功能
 - 联网探测：多探针判定，已在线时静默退出。
 - 自动登录：填写账号/密码并点击登录，成功后再次探测外网。
-- 保活巡检：默认每 5 分钟一次（launchd），掉线自动重登。
-- 自启：launchd 支持开机即运行。
+- 保活巡检：默认每 2 分钟一次（macOS 使用 launchd，Windows 使用任务计划程序），掉线自动重登。
+- 自启：macOS 的 launchd 与 Windows 任务计划程序均支持登录后自动运行。
 - 排障：日志 + 异常截图/HTML。
 
 ## 目录
 ```
 Auto_Wifi_Connect/
-├─ portal-login.sh          # bash 入口，探测/调度 Playwright 登录
+├─ portal-login.sh          # macOS bash 入口，探测/调度 Playwright 登录
 ├─ portal-login.mjs         # Playwright 脚本（登录逻辑）
 ├─ package.json / lock      # 依赖声明（playwright）
 ├─ .env.example             # 环境变量模板（账号、密码、门户地址）
 ├─ deploy.sh                # 一键部署（写 plist+启动 launchd）
 ├─ undeploy.sh              # 一键卸载（停止并移除 plist）
+├─ portal-login.ps1         # Windows PowerShell 入口，探测/调度 Playwright 登录
+├─ deploy.ps1               # Windows 任务计划程序部署
+├─ undeploy.ps1             # Windows 解除部署
 ├─ .gitignore               # Git 忽略配置
 ├─ LICENSE                  # ISC 许可证
 ├─ ms-playwright/ (可选)    # Playwright 浏览器缓存，拷贝可省下载
@@ -26,7 +29,7 @@ Auto_Wifi_Connect/
 ```
 
 ## 环境要求
-- macOS（Apple Silicon/Intel）
+- macOS（Apple Silicon/Intel）或 Windows 10/11
 - Node.js ≥ 18
 - 可访问 npm（如未拷贝 `ms-playwright/`/`node_modules/`）
 
@@ -91,6 +94,34 @@ Auto_Wifi_Connect/
   cd ~/Library/AutoWiFi/Auto_Wifi_Connect
   ./undeploy.sh
   ```
+
+## 一键部署 / 解除（Windows）
+
+环境要求：Windows 10/11、Node.js 18 或更高版本。请在 Windows 机器上单独安装依赖和 Chromium，不能直接复用 macOS 的 `node_modules` 或 `ms-playwright` 目录。
+
+1) 将项目放到一个固定路径，例如 `C:\AutoWiFi\Auto_Wifi_Connect`；复制 `.env.example` 为 `.env`，填入账号、密码和门户地址。
+
+2) 打开 PowerShell，进入项目目录后部署：
+   ```powershell
+   .\deploy.ps1
+   ```
+   如果本机策略阻止执行脚本，可仅对本次 PowerShell 会话执行：
+   ```powershell
+   Set-ExecutionPolicy -Scope Process Bypass
+   .\deploy.ps1
+   ```
+   部署脚本会安装依赖和 Chromium，并创建名为 `AutoWiFi Portal Login` 的任务计划：用户登录后按每 2 分钟巡检一次。可通过 `-IntervalMinutes 5` 调整为 5 分钟。
+
+3) 手动测试与查看日志：
+   ```powershell
+   .\portal-login.ps1
+   Get-Content .\portal-login.log -Tail 50
+   ```
+
+4) 解除部署：
+   ```powershell
+   .\undeploy.ps1
+   ```
 
 ### 手工 launchd（可选方案）
 如需手工配置，可参照下列 plist（与 deploy.sh 生成内容一致）：
